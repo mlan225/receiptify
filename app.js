@@ -21,9 +21,9 @@ const cors = require("cors");
 // const { config } = require("./config");
 require("dotenv").config();
 
-const client_id = process.env.clientID; // Your client id
-const client_secret = process.env.clientSecret; // Your secret
-const privateKey = fs.readFileSync("AuthKey_A8FKGGUQP3.p8").toString();
+const client_id = '338c7a7322084e92863f1aa8135d5d0b'; // Your client id
+const client_secret = '4cc748e80cd84c078123ebf198dc4a4b'; // Your secret
+// const privateKey = fs.readFileSync("AuthKey_A8FKGGUQP3.p8").toString();
 const teamId = process.env.teamId;
 const keyId = process.env.keyId;
 
