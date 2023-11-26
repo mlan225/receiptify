@@ -4,6 +4,8 @@
    * @return Object
    */
 
+  var currentRowIndex = 1;
+
   var displayName = "RECEIPTIFY";
   var dateOptions = {
     weekday: "long",
@@ -125,107 +127,29 @@
 
   //my manual retrieve function
   //use the spotify reciept handlebars file for example of the view
-  function retrieveTracksManually(domNumber, domPeriod) {
-
-    // manual data
-    trackListObject = [
-      {
-        "album": {
-            "album_type": "ALBUM",
-            "artists": [
-                {
-                    "external_urls": {
-                        "spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
-                    },
-                    "href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
-                    "id": "2n2RSaZqBuUUukhbLlpnE6",
-                    "name": "Sleep Token",
-                    "type": "artist",
-                    "uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
-                }
-            ],
-            "external_urls": {
-                "spotify": "https://open.spotify.com/album/1gjugH97doz3HktiEjx2vY"
-            },
-            "href": "https://api.spotify.com/v1/albums/1gjugH97doz3HktiEjx2vY",
-            "id": "1gjugH97doz3HktiEjx2vY",
-            "images": [
-                {
-                    "height": 640,
-                    "url": "https://i.scdn.co/image/ab67616d0000b2730b73608b678f169d3c8f35f0",
-                    "width": 640
-                },
-                {
-                    "height": 300,
-                    "url": "https://i.scdn.co/image/ab67616d00001e020b73608b678f169d3c8f35f0",
-                    "width": 300
-                },
-                {
-                    "height": 64,
-                    "url": "https://i.scdn.co/image/ab67616d000048510b73608b678f169d3c8f35f0",
-                    "width": 64
-                }
-            ],
-            "name": "Take Me Back To Eden",
-            "release_date": "2023-05-19",
-            "release_date_precision": "day",
-            "total_tracks": 12,
-            "type": "album",
-            "uri": "spotify:album:1gjugH97doz3HktiEjx2vY"
-        },
-        "artists": [
-            {
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
-                },
-                "href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
-                "id": "2n2RSaZqBuUUukhbLlpnE6",
-                "name": "Test thing here",
-                "type": "artist",
-                "uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
-            }
-        ],
-        "disc_number": 1,
-        "duration_ms": "6:36",
-        "explicit": false,
-        "external_ids": {
-            "isrc": "GBUM72200352"
-        },
-        "external_urls": {
-            "spotify": "https://open.spotify.com/track/0S38Oso3I9vpDXcTb7kYt9"
-        },
-        "href": "https://api.spotify.com/v1/tracks/0S38Oso3I9vpDXcTb7kYt9",
-        "id": "01",
-        "is_local": false,
-        "name": "Test thing here ",
-        "popularity": 76,
-        "preview_url": "https://p.scdn.co/mp3-preview/37dae98703ecc268384d30ed33045254aa4198c9?cid=338c7a7322084e92863f1aa8135d5d0b",
-        "track_number": 2,
-        "type": "track",
-        "uri": "spotify:track:0S38Oso3I9vpDXcTb7kYt9"
-      }
-    ]
+  function retrieveTracksManually(domNumber, domPeriod, manualInputData) {
 
     let data = {
-      trackList: trackListObject,
+      trackList: manualInputData,
       total: 0,
       date: today.toLocaleDateString("en-US", dateOptions).toUpperCase(),
       json: true,
+      count: 0
     }
 
     console.log(data.trackList)
 
     for (var i = 0; i < data.trackList.length; i++) {
+        data.count += 1;
         data.trackList[i].name = data.trackList[i].name.toUpperCase() + " - ";
-        data.total += data.trackList[i].duration_ms;
+        data.total += Number(data.trackList[i].duration_ms);
         data.trackList[i].id = (i + 1 < 10 ? "0" : "") + (i + 1);
-        let minutes = Math.floor(data.trackList[i].duration_ms / 60000);
-        let seconds = (
-          (data.trackList[i].duration_ms % 60000) /
-          1000
-        ).toFixed(0);
-        data.trackList[i].duration_ms =
-          minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        if(data.trackList[i].duration_ms < 10)
+        {
+          data.trackList[i].duration_ms = "0" + data.trackList[i].duration_ms + ":00";
+        } else {
+          data.trackList[i].duration_ms = data.trackList[i].duration_ms + ":00";
+        }
         for (var j = 0; j < data.trackList[i].artists.length; j++) {
           data.trackList[i].artists[j].name =
             data.trackList[i].artists[j].name.trim();
@@ -237,10 +161,19 @@
           }
         }
       }
+      
+      
+      if(data.total < 10)
+      {
+        data.total = "0" + data.total + ":00";
+      } else {
+        data.total = data.total + ":00";
+      }
 
-      minutes = Math.floor(data.total / 60000);
-      seconds = ((data.total % 60000) / 1000).toFixed(0);
-      data.total = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+      if(data.count < 10)
+      {
+        data.count = "0" + data.count;
+      }
 
       userProfilePlaceholder.innerHTML = userProfileTemplate({
         tracks: data.trackList,
@@ -249,6 +182,7 @@
         num: domNumber,
         name: displayName,
         period: domPeriod,
+        count: data.count
       });
 
       document
@@ -256,41 +190,41 @@
         .addEventListener("click", () => downloadImg(timeRangeSlug));
   }
 
-  function retrieveTracksApple(hist) {
-    let data = {
-      trackList: hist,
-      total: 0,
-      date: today.toLocaleDateString("en-US", dateOptions).toUpperCase(),
-      json: true,
-    };
-    let albumInfoArr = [];
-    for (var i = 0; i < data.trackList.length; i++) {
-      const attributes = data.trackList[i].attributes;
-      const isAlbum = data.trackList[i].type === "albums";
-      console.log(data.trackList[i].type);
-      const albumInfo = {
-        id: (i + 1 < 10 ? "0" : "") + (i + 1),
-        duration_ms: isAlbum ? attributes.trackCount : 1,
-        name: isAlbum
-          ? attributes.name.toUpperCase() + " - " + attributes.artistName
-          : attributes.name.toUpperCase(),
-      };
-      console.log(albumInfo);
-      albumInfoArr.push(albumInfo);
-      data.total += albumInfo.duration_ms;
-    }
-    userProfilePlaceholder.innerHTML = userProfileTemplate({
-      tracks: albumInfoArr,
-      total: data.total,
-      time: data.date,
-      num: 1,
-      name: displayName,
-      period: "HEAVY ROTATION",
-    });
-    document
-      .getElementById("download")
-      .addEventListener("click", () => downloadImg("heavy_rotation"));
-  }
+  // function retrieveTracksApple(hist) {
+  //   let data = {
+  //     trackList: hist,
+  //     total: 0,
+  //     date: today.toLocaleDateString("en-US", dateOptions).toUpperCase(),
+  //     json: true,
+  //   };
+  //   let albumInfoArr = [];
+  //   for (var i = 0; i < data.trackList.length; i++) {
+  //     const attributes = data.trackList[i].attributes;
+  //     const isAlbum = data.trackList[i].type === "albums";
+  //     console.log(data.trackList[i].type);
+  //     const albumInfo = {
+  //       id: (i + 1 < 10 ? "0" : "") + (i + 1),
+  //       duration_ms: isAlbum ? attributes.trackCount : 1,
+  //       name: isAlbum
+  //         ? attributes.name.toUpperCase() + " - " + attributes.artistName
+  //         : attributes.name.toUpperCase(),
+  //     };
+  //     console.log(albumInfo);
+  //     albumInfoArr.push(albumInfo);
+  //     data.total += albumInfo.duration_ms;
+  //   }
+  //   userProfilePlaceholder.innerHTML = userProfileTemplate({
+  //     tracks: albumInfoArr,
+  //     total: data.total,
+  //     time: data.date,
+  //     num: 1,
+  //     name: displayName,
+  //     period: "HEAVY ROTATION",
+  //   });
+  //   document
+  //     .getElementById("download")
+  //     .addEventListener("click", () => downloadImg("heavy_rotation"));
+  // }
 
   let params = getHashParams();
 
@@ -358,19 +292,76 @@
       $("#loggedin").hide();
     }
 
-    document.getElementById("short_term").addEventListener(
+    // document.getElementById("short_term").addEventListener(
+    //   "click",
+    //   function () {
+    //     retrieveTracks("short_term", 1, "LAST MONTH");
+    //   },
+    //   false
+    // );
+
+    document.getElementById("manual-input-button").addEventListener(
       "click",
-      function () {
-        retrieveTracks("short_term", 1, "LAST MONTH");
+      function() {
+        currentRowIndex += 1;
+        $("#manual-input-rows").append(`<div class='row manual-input-row' id='manualRow${currentRowIndex}' + manualRowId><div class='col-lg-4'><input class='form-control manual-input-artist' type='text'/></div><div class='col-lg-4'><input class='form-control manual-input-duration' type='number'/></div><div class='col-lg-4'><input class='form-control manual-input-name' type='text'/></div></div>`);
       },
       false
-    );
+    )
+
+    document.getElementById("remove-input-button").addEventListener(
+      "click",
+      () => {
+        let manualInputRows = document.getElementsByClassName("manual-input-row");
+        let lastElement = manualInputRows[manualInputRows.length - 1];
+        lastElement.remove()
+      },
+      false
+    )
 
     //manual input trigger
     document.getElementById("manual").addEventListener(
       "click",
       function () {
-        retrieveTracksManually(1, "LAST MONTH");
+
+        // manual data, create this from the inputs rows/fields. Read these fields and create object 
+        // let manualInputData = [
+        //   {
+        //     "artists": [
+        //         {
+        //             "name": "artist name",
+        //         }
+        //     ],
+        //     "duration_ms": 3,
+        //     "name": "name",
+        //   },
+        // ]
+
+        let manualInputData = []
+
+        let manualInputRows = document.getElementsByClassName("manual-input-row");
+        
+        for(var i = 0; i < manualInputRows.length; i++)
+        {
+          var rowArtist = manualInputRows[i].getElementsByClassName("manual-input-artist")[0].value;
+          var rowDuration = manualInputRows[i].getElementsByClassName("manual-input-duration")[0].value;
+          var rowName = manualInputRows[i].getElementsByClassName("manual-input-name")[0].value;
+          
+
+          let trackObj = {
+            artists: [
+              {
+                name: rowArtist
+              }
+            ],
+            duration_ms: rowDuration,
+            name: rowName
+          }
+
+          manualInputData.push(trackObj)
+        }
+
+        retrieveTracksManually(1, "LAST MONTH", manualInputData);
       },
       false
     );

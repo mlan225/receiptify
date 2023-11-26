@@ -272,6 +272,11 @@ td {
 }
 /** -- End of Added for Anthems Partnership --**/
 
+/* marvin custom css */
+.manual-input-row {
+  margin-bottom: 15px;
+}
+
 @media only screen and (min-width: 768px) and (max-width: 1280px) {
   #loggedin,
   #login {
