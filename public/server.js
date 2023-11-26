@@ -45,7 +45,7 @@
     userProfileTemplate = Handlebars.compile(userProfileSource),
     userProfilePlaceholder = document.getElementById("receipt");
 
-  function downloadImg(fileName) {
+  function downloadImg() {
     var offScreen = document.querySelector(".receiptContainer");
     window.scrollTo(0, 0);
     var clone = hiddenClone(offScreen);
@@ -56,74 +56,74 @@
       var link = document.createElement("a");
       console.log(dataURL);
       link.href = dataURL;
-      link.download = `${fileName}.png`;
+      link.download = `reciept.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
   }
 
-  function retrieveTracks(timeRangeSlug, domNumber, domPeriod) {
-    $.ajax({
-      url: `https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=${timeRangeSlug}`,
-      headers: {
-        Authorization: "Bearer " + access_token,
-      },
-      success: function (response) {
-        let data = {
-          trackList: response.items,
-          total: 0,
-          date: today.toLocaleDateString("en-US", dateOptions).toUpperCase(),
-          json: true,
-        };
+  // function retrieveTracks(timeRangeSlug, domNumber, domPeriod) {
+  //   $.ajax({
+  //     url: `https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=${timeRangeSlug}`,
+  //     headers: {
+  //       Authorization: "Bearer " + access_token,
+  //     },
+  //     success: function (response) {
+  //       let data = {
+  //         trackList: response.items,
+  //         total: 0,
+  //         date: today.toLocaleDateString("en-US", dateOptions).toUpperCase(),
+  //         json: true,
+  //       };
 
 
-        //print the object for manual use
-        console.log(data.trackList)
+  //       //print the object for manual use
+  //       console.log(data.trackList)
 
-        //for manual use we will send the data object to this function manually and run the below logic
+  //       //for manual use we will send the data object to this function manually and run the below logic
 
-        for (var i = 0; i < data.trackList.length; i++) {
-          data.trackList[i].name = data.trackList[i].name.toUpperCase() + " - ";
-          data.total += data.trackList[i].duration_ms;
-          data.trackList[i].id = (i + 1 < 10 ? "0" : "") + (i + 1);
-          let minutes = Math.floor(data.trackList[i].duration_ms / 60000);
-          let seconds = (
-            (data.trackList[i].duration_ms % 60000) /
-            1000
-          ).toFixed(0);
-          data.trackList[i].duration_ms =
-            minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-          for (var j = 0; j < data.trackList[i].artists.length; j++) {
-            data.trackList[i].artists[j].name =
-              data.trackList[i].artists[j].name.trim();
-            data.trackList[i].artists[j].name =
-              data.trackList[i].artists[j].name.toUpperCase();
-            if (j != data.trackList[i].artists.length - 1) {
-              data.trackList[i].artists[j].name =
-                data.trackList[i].artists[j].name + ", ";
-            }
-          }
-        }
-        minutes = Math.floor(data.total / 60000);
-        seconds = ((data.total % 60000) / 1000).toFixed(0);
-        data.total = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  //       for (var i = 0; i < data.trackList.length; i++) {
+  //         data.trackList[i].name = data.trackList[i].name.toUpperCase() + " - ";
+  //         data.total += data.trackList[i].duration_ms;
+  //         data.trackList[i].id = (i + 1 < 10 ? "0" : "") + (i + 1);
+  //         let minutes = Math.floor(data.trackList[i].duration_ms / 60000);
+  //         let seconds = (
+  //           (data.trackList[i].duration_ms % 60000) /
+  //           1000
+  //         ).toFixed(0);
+  //         data.trackList[i].duration_ms =
+  //           minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  //         for (var j = 0; j < data.trackList[i].artists.length; j++) {
+  //           data.trackList[i].artists[j].name =
+  //             data.trackList[i].artists[j].name.trim();
+  //           data.trackList[i].artists[j].name =
+  //             data.trackList[i].artists[j].name.toUpperCase();
+  //           if (j != data.trackList[i].artists.length - 1) {
+  //             data.trackList[i].artists[j].name =
+  //               data.trackList[i].artists[j].name + ", ";
+  //           }
+  //         }
+  //       }
+  //       minutes = Math.floor(data.total / 60000);
+  //       seconds = ((data.total % 60000) / 1000).toFixed(0);
+  //       data.total = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 
-        userProfilePlaceholder.innerHTML = userProfileTemplate({
-          tracks: data.trackList,
-          total: data.total,
-          time: data.date,
-          num: domNumber,
-          name: displayName,
-          period: domPeriod,
-        });
+  //       userProfilePlaceholder.innerHTML = userProfileTemplate({
+  //         tracks: data.trackList,
+  //         total: data.total,
+  //         time: data.date,
+  //         num: domNumber,
+  //         name: displayName,
+  //         period: domPeriod,
+  //       });
 
-        document
-          .getElementById("download")
-          .addEventListener("click", () => downloadImg(timeRangeSlug));
-      },
-    });
-  }
+  //       document
+  //         .getElementById("download")
+  //         .addEventListener("click", () => downloadImg(timeRangeSlug));
+  //     },
+  //   });
+  // }
 
   //my manual retrieve function
   //use the spotify reciept handlebars file for example of the view
@@ -187,7 +187,7 @@
 
       document
         .getElementById("download")
-        .addEventListener("click", () => downloadImg(timeRangeSlug));
+        .addEventListener("click", () => downloadImg());
   }
 
   // function retrieveTracksApple(hist) {
